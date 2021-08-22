@@ -21,7 +21,6 @@ public class UserStorageService {
         return user;
     }
 
-
     public static UserStorageService getInstance() {
         return instance;
     }
@@ -35,13 +34,4 @@ public class UserStorageService {
         getUsersMap().put(login,user);
     }
 
-    /*public static boolean isExist(Users user, HttpServletRequest req) {// если совпадает лог и пасс значит есть такой пользователь
-        String login = req.getParameter(LOGIN_PARAM);
-        String password = req.getParameter(PASSWORD_PARAM);
-        if(login.equals(user.getLogin()) && password.equals(user.getPassword())) {
-            return true;
-        } else {
-            return false;
-        }
-    }*/
 }

@@ -18,29 +18,21 @@ public class LoginServlet extends HttpServlet {
     private static final String LOGIN_PARAM = "login";
     private static final String PASSWORD_PARAM = "password";
 
-   /* @Override
-    protected void doGet(HttpServletRequest req,
-                         HttpServletResponse resp) throws ServletException, IOException
-    {
-        resp.setContentType("text/html; charset=UTF-8");
-        PrintWriter writer = resp.getWriter();
-        req.getRequestDispatcher("/views/SignIn.jsp").forward(req, resp);
-    }*/
-
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("text/html;charset=UTF-8");
-
-        PrintWriter writer = resp.getWriter();
         String login = req.getParameter(LOGIN_PARAM);
         String password = req.getParameter(PASSWORD_PARAM);
-            if (LoginService.getInstance().isLoginCorrect(login,password)) {
-                Users user = UserStorageService.getInstance().getUser(login);
-                HttpSession session = req.getSession();
-                session.setAttribute("user", user);
+        HttpSession session = req.getSession();
+
+        try {
+            LoginService.getInstance().loginCheck(login,password);
+            Users user = UserStorageService.getInstance().getUser(login);
+            session.setAttribute("user", user);
             req.getRequestDispatcher("/views/message.jsp").forward(req, resp);
-            } else {
-                req.getRequestDispatcher("/views/SignIn_login_exception.jsp").forward(req, resp);
-            }
+        } catch (IllegalArgumentException e) {
+            req.setAttribute("name", e.getMessage());
+            getServletContext().getRequestDispatcher("/views/SignIn.jsp").forward(req,resp);
+        }
     }
 }

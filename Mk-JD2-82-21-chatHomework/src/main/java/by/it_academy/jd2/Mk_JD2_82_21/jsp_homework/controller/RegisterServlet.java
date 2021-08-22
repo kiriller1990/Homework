@@ -21,8 +21,6 @@ public class RegisterServlet extends HttpServlet {
     private static final String NAME_PARAM = "name";
     private static final String DATE_PARAM = "date";
 
-
-
     @Override
     protected void doGet(HttpServletRequest req,
                          HttpServletResponse resp) throws ServletException, IOException
@@ -35,44 +33,21 @@ public class RegisterServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("text/html;charset=UTF-8");
-
-        PrintWriter writer = resp.getWriter();
-        String login = req.getParameter("login");
-        String password = req.getParameter("password");
-        String name = req.getParameter("name");
-        String date = req.getParameter("date");
+        String login = req.getParameter(LOGIN_PARAM);
+        String password = req.getParameter(PASSWORD_PARAM);
+        String name = req.getParameter(NAME_PARAM);
+        String date = req.getParameter(DATE_PARAM);
         HttpSession session = req.getSession();
 
-        /*if(session.isNew()) {*/
-            if (LoginService.getInstance().isExist(login, password)) {
-                req.getRequestDispatcher("/views/SignUp_allreadyExist_exception.jsp").forward(req, resp);
-            } else {
-                Users user = new Users(login, password, name, date);
-                UserStorageService.getInstance().setUser(login, user);
-                SessionService.getInstance().save(req, user);
-                req.getRequestDispatcher("/views/SignIn.jsp").forward(req, resp);
-                //проверка что пользователь создан удалить перед залитием
-               /* writer.println("<p>Login: " + UserStorageService.getInstance().getUser(login).getLogin() + "</p>");
-                writer.println("<p>Password: " + UserStorageService.getInstance().getUser(login).getPassword() + "</p>");
-                writer.println("<p>Name: " + UserStorageService.getInstance().getUser(login).getName() + "</p>");
-                writer.println("<p>Date: " + UserStorageService.getInstance().getUser(login).getDate() + "</p>");*/
-            }
-       /* } else {*/
-
-       /* }*/
-
-        /*Users checkingUser = UserStorageService.getInstance().getUser(login);
-        if (checkingUser.getLogin().equals(login) ) {
-            servletRequest.getRequestDispatcher("/views/AlreadyExist_exception.jsp").forward(servletRequest, servletResponse);
-        }*/
-
-       /* servletRequest.getRequestDispatcher("/views/message.jsp").forward(servletRequest, servletResponse);*/
-
-
-            /*writer.println("<p>Login: " + UserStorageService.getInstance().getUser(login).getLogin() + "</p>");//проверяем вычитали ли параметры
-            writer.println("<p>Password: " + UserStorageService.getInstance().getUser(login).getPassword() + "</p>");
-            writer.println("<p>Name: " + UserStorageService.getInstance().getUser(login).getName() + "</p>");
-            writer.println("<p>Date: " + UserStorageService.getInstance().getUser(login).getDate() + "</p>");*/
-
+        try {
+            LoginService.getInstance().registerCheck(login, password,name,date);
+            Users user = new Users(login, password, name, date);
+            UserStorageService.getInstance().setUser(login, user);
+            SessionService.getInstance().save(req, user);
+            req.getRequestDispatcher("/views/SignIn.jsp").forward(req, resp);
+        }catch (IllegalArgumentException e) {
+            req.setAttribute("name", e.getMessage());
+            getServletContext().getRequestDispatcher("/views/SignUp.jsp").forward(req,resp);
+        }
     }
 }

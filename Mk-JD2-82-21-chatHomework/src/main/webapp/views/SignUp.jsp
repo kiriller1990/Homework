@@ -10,6 +10,7 @@
 <body>
     <form action="http://localhost:8080/Mk-JD2-82-21-0.0.0-SNAPSHOT/" method="POST">
     <h1> Приветству тебя пользователь, войди или зарегестрируйся <h1>
+    <h2>  ${name} <h2>
     <input type="text" name="login" placeholder = "Логин" size=50>
     <p></p>
     <input type="password" name="password" placeholder= "Пароль" size=50>

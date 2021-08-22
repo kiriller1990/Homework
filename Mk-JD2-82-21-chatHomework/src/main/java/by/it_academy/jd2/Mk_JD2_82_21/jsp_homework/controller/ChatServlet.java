@@ -1,6 +1,7 @@
 package by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.controller;
 
 import by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.service.MessageService;
+import by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.service.UserStorageService;
 import by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.storage.model.Messages;
 import by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.storage.model.Users;
 
@@ -28,9 +29,9 @@ public class ChatServlet extends HttpServlet {
 
         LinkedList<Messages> messages = MessageService.getInstance().getMessage(user) ;
 
-
         req.setAttribute("messages", messages);
         req.getRequestDispatcher("/views/chat.jsp").forward(req, resp);
     }
+
 }
 

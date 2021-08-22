@@ -25,6 +25,6 @@ public class MessageService {
     }
 
     public LinkedList<Messages> getMessage(Users user) {
-       return MessageStorage.getInstance().getUserList().get(user);
+       return MessageStorage.getInstance().getUserList().get(user.getLogin());
     }
 }

@@ -17,6 +17,6 @@
             ${item.getMessageSendingTime().toString()}<br>
             ${item.getMessageText()}<br><br>
         </c:forEach>
-
+    <input type="button" onclick="location.href='http://localhost:8080/Mk-JD2-82-21-0.0.0-SNAPSHOT/views/message.jsp';" value="Назад">
     </body>
 </html>
