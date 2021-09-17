@@ -29,24 +29,11 @@ public class CheckService {
 
     public void idCheck (String idParam) {
         String exMessage = "";
-
         if (idParam.isEmpty()) {
             exMessage += "Введите ID \n";
-        } else if(!isExist(idParam)) {
-            exMessage += "Пользователь c таким ID не найден \n";
         }
         if (!exMessage.isEmpty()) {
             throw new IllegalArgumentException(exMessage);
         }
     }
-
-    public boolean isExist (String idParam) {
-           long id = Long.parseLong(idParam);
-           Employee employee = DBInitializer.getInstance().getEmployee(id);
-           if(employee == null) {
-               return false;
-           }else {
-               return true;
-           }
-        }
 }
