@@ -17,11 +17,13 @@
         <tr>
         <td>${item.getId()}</td>
         <td><a href="/Mk-JD2-82-21-0.0.0-SNAPSHOT/department?id=${item.getId()}">${item.getTitle()}</a></td>
-        <td>${item.getParentDepartment()}</td>
+        <td>${item.getParentDepartment().getTitle()}</td>
         </tr>
         </c:forEach>
         </table>
         <br>
+
+
         <input type="button" onclick="location.href='/Mk-JD2-82-21-0.0.0-SNAPSHOT/';" value="Назад">
         </body>
 </html>

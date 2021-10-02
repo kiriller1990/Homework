@@ -57,5 +57,15 @@
 
         <br>
         <input type="button" onclick="location.href='/Mk-JD2-82-21-0.0.0-SNAPSHOT/';" value="Назад"> <p></p>
+
+        Поиск по имени:
+        <input type="text" name="nameFilter" placeholder = "Поиск по имени" size=50>
+        Поиск по зарплате
+        <input type="text" name="salaryValue" placeholder = "Поиск по зарплате" size=50>
+        <select name="filterType">
+                    <option>больше</option>
+                    <option>меньше</option>
+                </select>
+        <input type="submit" value="Сортировать">
         </body>
 </html>

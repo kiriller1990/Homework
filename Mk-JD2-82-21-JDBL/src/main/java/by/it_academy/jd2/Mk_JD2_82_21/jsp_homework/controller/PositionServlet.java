@@ -1,7 +1,8 @@
 package by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.controller;
 
-import by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.service.DBService.DBPositionService;
-import by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.service.SampleService;
+import by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.service.PositionService;
+import by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.storage.DBPositionStorage;
+import by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.service.EmployeeService;
 import by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.storage.model.Employee;
 import by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.storage.model.Position;
 
@@ -21,11 +22,11 @@ public class PositionServlet extends HttpServlet {
                          HttpServletResponse resp) throws ServletException, IOException {
         String id = req.getParameter(ID_PARAM);
         if(id == null) {
-        List<Position> position = DBPositionService.getInstance().getPositionList();
+        List<Position> position = PositionService.getInstance().getPositionList();
         req.setAttribute("position",position);
         req.getRequestDispatcher("/views/positionList.jsp").forward(req, resp);
         } else {
-            List<Employee> employees = SampleService.getInstance().getEmployeesWithPositionSample(id);
+            List<Employee> employees = EmployeeService.getInstance().getEmployeesSortedByPosition(id);
             req.setAttribute("employees",employees);
             req.getRequestDispatcher("/views/employeeList.jsp").forward(req, resp);
 

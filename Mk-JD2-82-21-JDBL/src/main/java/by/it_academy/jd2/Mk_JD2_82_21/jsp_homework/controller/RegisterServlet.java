@@ -1,6 +1,7 @@
 package by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.controller;
 import by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.service.CheckService;
-import by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.service.DBService.DBInitializer;
+import by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.service.EmployeeService;
+import by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.storage.DBEmployeeStorage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.servlet.ServletException;
@@ -9,7 +10,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 @WebServlet(name = "RegisterServlet", urlPatterns = "/")
 public class RegisterServlet extends HttpServlet {
@@ -17,9 +17,7 @@ public class RegisterServlet extends HttpServlet {
     private static final String SALARY_PARAM = "salary";
     private static final String DEPARTMENTS_PARAM = "department";
     private static final String POSITION_PARAM = "position";
-
     private ObjectMapper mapper = new ObjectMapper();
-
 
     @Override
     protected void doGet(HttpServletRequest req,
@@ -40,11 +38,8 @@ public class RegisterServlet extends HttpServlet {
         try {
             CheckService.getInstance().registerCheck(name,salaryParam);
             double salary = Double.parseDouble(salaryParam);
-            long departments = Long.parseLong(departmentsParam);
-            long positions = Long.parseLong(position);
-
            // Employee employee = mapper.readValue(req.getInputStream(),Employee.class);
-            long id = DBInitializer.getInstance().addEmployee(name, salary);
+            long id = EmployeeService.getInstance().addEmployee(name, salary);
             req.setAttribute("id", id);
             req.getRequestDispatcher("/views/id.jsp").forward(req, resp);
         }catch (IllegalArgumentException e) {

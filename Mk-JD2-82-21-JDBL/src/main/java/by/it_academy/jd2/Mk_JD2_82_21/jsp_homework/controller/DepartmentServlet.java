@@ -1,7 +1,8 @@
 package by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.controller;
 
-import by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.service.DBService.DBDepartmentService;
-import by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.service.SampleService;
+import by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.service.DepartmentService;
+import by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.storage.DBDepartmentStorage;
+import by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.service.EmployeeService;
 import by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.storage.model.Department;
 import by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.storage.model.Employee;
 
@@ -21,11 +22,11 @@ public class DepartmentServlet extends HttpServlet {
                          HttpServletResponse resp) throws ServletException, IOException {
         String id = req.getParameter(ID_PARAM);
         if(id == null) {
-            List<Department> departments = DBDepartmentService.getInstance().getDepartmentList();
+            List<Department> departments = DepartmentService.getInstance().getDepartmentList();
             req.setAttribute("department", departments);
             req.getRequestDispatcher("/views/departmentList.jsp").forward(req, resp);
         } else {
-            List<Employee> employees = SampleService.getInstance().getEmployeesWithDepartmentSample(id);
+            List<Employee> employees = EmployeeService.getInstance().getEmployeesSortedByDepartment(id);
             req.setAttribute("employees",employees);
             req.getRequestDispatcher("/views/employeeList.jsp").forward(req, resp);
 

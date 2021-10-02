@@ -36,4 +36,12 @@ public class CheckService {
             throw new IllegalArgumentException(exMessage);
         }
     }
+
+    public boolean isFilterExist(String searchName,String salaryValueFilteredParam) {
+        Boolean filterExist = true;
+            if (searchName == null && salaryValueFilteredParam ==null) {
+                filterExist = false;
+            }
+        return filterExist;
+    }
 }

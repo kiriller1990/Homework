@@ -19,6 +19,7 @@
         <input type="button" onclick="location.href='/Mk-JD2-82-21-0.0.0-SNAPSHOT/department';" value="Список отделов">
         <input type="button" onclick="location.href='/Mk-JD2-82-21-0.0.0-SNAPSHOT/position';" value="Список должностей">
         <input type="button" onclick="location.href='/Mk-JD2-82-21-0.0.0-SNAPSHOT/employeeList';" value="Список сотрудников">
+        <input type="button" onclick="location.href='/Mk-JD2-82-21-0.0.0-SNAPSHOT/employeeListWithFilter';" value="Список сотрудников с фильтром">
     </form>
     </body>
 </html>
