@@ -19,8 +19,8 @@
                 <td>${employee.getId()}</td>
                 <td>${employee.getName()}</td>
                 <td><fmt:formatNumber type = "number" value ="${employee.getSalary()}"/></td>
-                <td>${employee.getTitle()}</td>
-                <td>${employee.getPosition()}</td>
+                <td>${employee.getDepartment().getTitle()}</td>
+                <td>${employee.getPosition().getPosition()}</td>
                 </tr>
                 </table>
         <input type="button" onclick="location.href='/Mk-JD2-82-21-0.0.0-SNAPSHOT/';" value="Назад">

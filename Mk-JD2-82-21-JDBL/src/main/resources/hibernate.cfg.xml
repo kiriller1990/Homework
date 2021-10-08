@@ -13,7 +13,7 @@
         <property name="hibernate.connection.password">11609</property>
         <property name="hibernate.show_sql">true</property>
 
-        <property name="hibernate.default_schema"></property>
+        <property name="hibernate.default_schema">application</property>
 
         <property name="hibernate.hbm2ddl.auto">update</property>
 

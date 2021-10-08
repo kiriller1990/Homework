@@ -2,6 +2,7 @@ package by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.controller;
 
 import by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.service.CheckService;
 import by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.service.EmployeeService;
+import by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.service.api.IEmployeeService;
 import by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.storage.model.Employee;
 import by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.storage.model.Search;
 
@@ -15,8 +16,14 @@ import java.util.List;
 
 @WebServlet(name = "EmployeeListServlet ", urlPatterns = "/employeeList")
 public class EmployeeListServlet extends HttpServlet {
+    private final IEmployeeService iEmployeeService;
+
     private static final String PAGE_NUMBER_PARAM = "pageNumber";
     private static final long EMPLOYEES_IN_ONE_PAGE_PARAM = 20;
+
+    public EmployeeListServlet() {
+        this.iEmployeeService = EmployeeService.getInstance();
+    }
 
     @Override
     protected void doGet(HttpServletRequest req,
@@ -24,13 +31,13 @@ public class EmployeeListServlet extends HttpServlet {
         String pageNumber = req.getParameter(PAGE_NUMBER_PARAM);
         //добавил пагинацию
         long page;
-        long lastPage = EmployeeService.getInstance().getTheNumberOfPages(EMPLOYEES_IN_ONE_PAGE_PARAM) ;
+        long lastPage = iEmployeeService.getTheNumberOfPages(EMPLOYEES_IN_ONE_PAGE_PARAM) ;
         if(pageNumber == null) {
             page = 1;
         }else {
             page = Long.parseLong(pageNumber);
         }
-            List<Employee> employees = EmployeeService.getInstance().getEmployees(page, EMPLOYEES_IN_ONE_PAGE_PARAM);
+            List<Employee> employees = iEmployeeService.getEmployees(page, EMPLOYEES_IN_ONE_PAGE_PARAM);
             req.setAttribute("page",page);
             req.setAttribute("lastPage", lastPage);
             req.setAttribute("employees", employees);

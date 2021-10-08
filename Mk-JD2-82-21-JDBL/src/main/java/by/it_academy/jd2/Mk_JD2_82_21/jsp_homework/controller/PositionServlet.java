@@ -1,7 +1,6 @@
 package by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.controller;
 
 import by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.service.PositionService;
-import by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.storage.DBPositionStorage;
 import by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.service.EmployeeService;
 import by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.storage.model.Employee;
 import by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.storage.model.Position;

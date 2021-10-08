@@ -1,7 +1,8 @@
 package by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.controller;
 import by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.service.CheckService;
 import by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.service.EmployeeService;
-import by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.storage.DBEmployeeStorage;
+import by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.service.api.IEmployeeService;
+import by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.storage.model.Employee;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.servlet.ServletException;
@@ -13,11 +14,14 @@ import java.io.IOException;
 
 @WebServlet(name = "RegisterServlet", urlPatterns = "/")
 public class RegisterServlet extends HttpServlet {
+    private IEmployeeService iEmployeeService;
     private static final String NAME_PARAM = "name";
     private static final String SALARY_PARAM = "salary";
-    private static final String DEPARTMENTS_PARAM = "department";
-    private static final String POSITION_PARAM = "position";
     private ObjectMapper mapper = new ObjectMapper();
+
+    public RegisterServlet() {
+        this.iEmployeeService = EmployeeService.getInstance();
+    }
 
     @Override
     protected void doGet(HttpServletRequest req,
@@ -32,14 +36,15 @@ public class RegisterServlet extends HttpServlet {
         resp.setContentType("text/html;charset=UTF-8");
         String name = req.getParameter(NAME_PARAM);
         String salaryParam = req.getParameter(SALARY_PARAM);
-        String departmentsParam = req.getParameter(DEPARTMENTS_PARAM);
-        String position = req.getParameter(POSITION_PARAM);
 
         try {
             CheckService.getInstance().registerCheck(name,salaryParam);
             double salary = Double.parseDouble(salaryParam);
+            Employee employee = new Employee();
+                employee.setName(name);
+                employee.setSalary(salary);
            // Employee employee = mapper.readValue(req.getInputStream(),Employee.class);
-            long id = EmployeeService.getInstance().addEmployee(name, salary);
+            long id = iEmployeeService.addEmployee(employee);
             req.setAttribute("id", id);
             req.getRequestDispatcher("/views/id.jsp").forward(req, resp);
         }catch (IllegalArgumentException e) {

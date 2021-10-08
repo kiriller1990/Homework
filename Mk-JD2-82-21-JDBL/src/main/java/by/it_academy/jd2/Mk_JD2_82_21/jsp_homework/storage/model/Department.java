@@ -10,7 +10,7 @@ public class Department {
     private long id;
     @Column(name = "title")
     private String title;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "parental_department", referencedColumnName = "id")
     private Department parentDepartment;
 

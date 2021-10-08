@@ -1,45 +1,24 @@
 package by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.storage.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
+@Table(name = "employes")
 public class Employee implements Serializable {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @Column
+    @Column(name = "name")
     private String name;
-    @Column
+    @Column (name = "salary")
     private double salary;
-    private String title;
-    private  String position;
+    private Department department;
+    private  Position position;
 
-    private Employee(){
 
-    }
+    public Employee(){
 
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setSalary(double salary) {
-        this.salary = salary;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setPosition(String position) {
-        this.position = position;
     }
 
     public Employee(long id, String name, double salary) {
@@ -48,11 +27,11 @@ public class Employee implements Serializable {
         this.salary = salary;
     }
 
-    public Employee(long id, String name, double salary, String title, String position) {
+    public Employee(long id, String name, double salary, Department department, Position position) {
         this.id = id;
         this.name = name;
         this.salary = salary;
-        this.title = title;
+        this.department = department;
         this.position = position;
     }
 
@@ -60,20 +39,40 @@ public class Employee implements Serializable {
         return id;
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public double getSalary() {
         return salary;
     }
 
-    public String getTitle() {
-        return title;
+    public void setSalary(double salary) {
+        this.salary = salary;
     }
 
-    public String getPosition() {
+    public Department getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(Department department) {
+        this.department = department;
+    }
+
+    public Position getPosition() {
         return position;
+    }
+
+    public void setPosition(Position position) {
+        this.position = position;
     }
 }
 
