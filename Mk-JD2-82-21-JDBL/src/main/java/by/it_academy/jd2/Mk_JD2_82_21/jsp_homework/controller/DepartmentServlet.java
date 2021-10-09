@@ -39,7 +39,6 @@ public class DepartmentServlet extends HttpServlet {
             List<Employee> employees = iEmployeeService.getEmployeesSortedByDepartment(id);
             req.setAttribute("employees",employees);
             req.getRequestDispatcher("/views/employeeList.jsp").forward(req, resp);
-
         }
     }
 }

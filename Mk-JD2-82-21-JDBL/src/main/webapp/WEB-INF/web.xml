@@ -8,7 +8,7 @@
     <!-- Choose SQL or HIBERNATE before start -->
     <context-param>
         <param-name>StorageType</param-name>
-        <param-value>SQL</param-value>
+        <param-value>HIBERNATE</param-value>
     </context-param>
 
     <listener>

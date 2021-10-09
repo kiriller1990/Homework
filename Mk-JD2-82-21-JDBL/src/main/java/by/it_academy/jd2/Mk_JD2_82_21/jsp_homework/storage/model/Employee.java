@@ -5,7 +5,7 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "employes")
-public class Employee implements Serializable {
+public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -13,7 +13,11 @@ public class Employee implements Serializable {
     private String name;
     @Column (name = "salary")
     private double salary;
+    @ManyToOne
+    @JoinColumn(name="departments",referencedColumnName = "id")
     private Department department;
+    @ManyToOne
+    @JoinColumn(name="position",referencedColumnName = "id")
     private  Position position;
 
 

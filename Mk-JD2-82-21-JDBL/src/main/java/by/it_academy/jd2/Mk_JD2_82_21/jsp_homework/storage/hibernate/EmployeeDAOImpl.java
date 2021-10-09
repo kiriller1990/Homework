@@ -4,6 +4,7 @@ import by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.storage.api.IEmployeeDAO;
 import by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.storage.model.Employee;
 import by.it_academy.jd2.Mk_JD2_82_21.jsp_homework.storage.util.HibernateUtil;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
@@ -31,9 +32,10 @@ public class EmployeeDAOImpl implements IEmployeeDAO {
 
     @Override
     public Employee getEmployeeCard(String idEmployee) {
+         long id = Long.parseLong(idEmployee);
         Session session = HibernateUtil.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
-        Employee getEmployee = session.get(Employee.class,idEmployee);
+        Employee getEmployee = session.get(Employee.class,id);
         transaction.commit();
         session.close();
         return getEmployee;
@@ -76,7 +78,18 @@ public class EmployeeDAOImpl implements IEmployeeDAO {
 
     @Override
     public List<Employee> getEmployeeListSortedByDepartment(String parameter) {
-        return null;
+         Long id = Long.parseLong(parameter);
+
+        SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+        Session session = sessionFactory.openSession();
+        CriteriaBuilder criteriaBuilder = sessionFactory.createEntityManager().getCriteriaBuilder();
+
+        CriteriaQuery<Employee> criteriaQuery = criteriaBuilder.createQuery(Employee.class);
+        Root<Employee> rootAuto = criteriaQuery.from(Employee.class);
+        criteriaBuilder.equal(rootAuto.get("departments"), id);
+        List<Employee> list = session.createQuery(criteriaQuery).getResultList();
+        session.close();
+        return list;
     }
 
     @Override

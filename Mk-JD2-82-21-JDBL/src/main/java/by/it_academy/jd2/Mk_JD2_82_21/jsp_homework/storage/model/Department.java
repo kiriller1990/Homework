@@ -11,7 +11,7 @@ public class Department {
     @Column(name = "title")
     private String title;
     @ManyToOne
-    @JoinColumn(name = "parental_department", referencedColumnName = "id")
+    @JoinColumn(name = "parent_department", referencedColumnName = "id")
     private Department parentDepartment;
 
     public  Department() {}
