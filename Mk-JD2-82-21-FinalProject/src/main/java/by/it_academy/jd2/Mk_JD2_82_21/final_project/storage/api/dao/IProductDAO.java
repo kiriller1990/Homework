@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 
 public interface IProductDAO extends JpaRepository<Product, Long> {
-    Page<Product> findProductsByName(String name, Pageable pageable);
+    Page<Product> findProductsByProductName(String name, Pageable pageable);
 }

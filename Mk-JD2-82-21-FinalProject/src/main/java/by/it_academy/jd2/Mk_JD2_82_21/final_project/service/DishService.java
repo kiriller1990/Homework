@@ -25,15 +25,12 @@ public class DishService implements IDishService {
     private final IDishDAO dishDAO;
     private final UserHolder userHolder;
     private final IProductService productService;
-    private final IIngredientService ingredientService;
 
-    public DishService(IDishDAO dishDAO, UserHolder userHolder, IProductService productService, IIngredientService ingredientService) {
+    public DishService(IDishDAO dishDAO, UserHolder userHolder, IProductService productService) {
         this.dishDAO = dishDAO;
         this.userHolder = userHolder;
         this.productService = productService;
-        this.ingredientService = ingredientService;
     }
-
 
     @Override
     public void addDish(DishDTO dishDTO) {
@@ -44,7 +41,7 @@ public class DishService implements IDishService {
         dish.setUserWhoMadeTheEntry(userHolder.getUser());
         dish.setTitle(dishDTO.getName());
 
-           // Извлекая id продуктов и вес продуктов добавляем в блюдо список ингредиентов
+            // Извлекая id продуктов и вес продуктов добавляем в блюдо список ингредиентов
         List<Ingredient> ingredients = dishDTO.getIngredients();
         List<Ingredient> ingredientInDishList = new ArrayList<>();
         Ingredient ingredientInDish = new Ingredient();
@@ -84,8 +81,6 @@ public class DishService implements IDishService {
             return dishDAO.findAll(pageable);
         }
     }
-
-
 
     @Override
     public void updateDish(Dish dish, long id, LocalDateTime dt_update) {

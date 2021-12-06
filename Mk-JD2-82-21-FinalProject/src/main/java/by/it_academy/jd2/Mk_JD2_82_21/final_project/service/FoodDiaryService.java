@@ -27,22 +27,20 @@ public class FoodDiaryService implements IFoodDiaryService {
     private final IProfileService profileService;
     private final ICaloriesCalculationService caloriesCalculationService;
     private final UserHolder userHolder;
-    private final IUserService userService;
 
 
     public FoodDiaryService(IFoodDiaryDAO foodDiaryDAO, IProfileService profileService,
                             ICaloriesCalculationService caloriesCalculationService,
-                            UserHolder userHolder, IUserService userService) {
+                            UserHolder userHolder) {
         this.foodDiaryDAO = foodDiaryDAO;
         this.profileService = profileService;
         this.caloriesCalculationService = caloriesCalculationService;
         this.userHolder = userHolder;
-        this.userService = userService;
     }
 
     @Override
     public void addFoodDiary(FoodDiary foodDiary,long id_profile) {
-        User user = userService.getByLogin(userHolder.getAuthentication().getName());
+        User user = userHolder.getUser();
         Profile profile = profileService.getProfile(id_profile);
         if(profile.getUser().getId() == user.getId() || user.getRole().equals(ERole.ROLE_ADMIN)) {
             LocalDateTime timeStamp = LocalDateTime.now();
@@ -65,7 +63,7 @@ public class FoodDiaryService implements IFoodDiaryService {
     public List<FoodDiary> getAllMealsInADay(long day, long id_profile) {
         LocalDateTime startDay = Instant.ofEpochMilli(day).atZone(ZoneId.systemDefault()).toLocalDateTime();
         LocalDateTime endDay = startDay.plusDays(1);
-        return foodDiaryDAO.findAllByProfileIdAndUpdateTimeBetween(id_profile,startDay,endDay);
+        return foodDiaryDAO.findAllByProfileIdAndUpdateDateBetween(id_profile,startDay,endDay);
     }
 
     @Override
@@ -77,7 +75,7 @@ public class FoodDiaryService implements IFoodDiaryService {
 
     @Override
     public Page<FoodDiary> getFoodDiaryList(Pageable pageable, long id_profile) {
-        User user = userService.getByLogin(userHolder.getAuthentication().getName());
+        User user = userHolder.getUser();
         Profile profile = profileService.getProfile(id_profile);
         if(profile.getUser().getId() == user.getId() || user.getRole().equals(ERole.ROLE_ADMIN)) {
             return foodDiaryDAO.findALLyByProfileId(id_profile, pageable);

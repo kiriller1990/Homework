@@ -1,23 +1,19 @@
 package by.it_academy.jd2.Mk_JD2_82_21.final_project.service;
 
 import by.it_academy.jd2.Mk_JD2_82_21.final_project.service.api.IIngredientService;
-import by.it_academy.jd2.Mk_JD2_82_21.final_project.service.api.IProductService;
 import by.it_academy.jd2.Mk_JD2_82_21.final_project.storage.api.dao.IIngredientDAO;
 import by.it_academy.jd2.Mk_JD2_82_21.final_project.storage.model.Ingredient;
 import by.it_academy.jd2.Mk_JD2_82_21.final_project.storage.model.Product;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class IngredientService implements IIngredientService {
-    private final IIngredientDAO ingredientDAO;
-    private final IProductService productService;
+    private static IIngredientDAO ingredientDAO;
 
-    public IngredientService(IIngredientDAO ingredientDAO, IProductService productService) {
+    public IngredientService(IIngredientDAO ingredientDAO) {
         this.ingredientDAO = ingredientDAO;
-        this.productService = productService;
     }
 
     @Override

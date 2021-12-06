@@ -19,19 +19,18 @@ import java.util.List;
 public class ProductService implements IProductService {
     private final IProductDAO productDAO;
     private final UserHolder userHolder;
-    private final IUserService userService;
+
 
     @Autowired
-    public ProductService(IProductDAO productDAO, UserHolder userHolder, IUserService userService) {
+    public ProductService(IProductDAO productDAO, UserHolder userHolder) {
         this.productDAO = productDAO;
         this.userHolder = userHolder;
-        this.userService = userService;
     }
 
     @Override
     public void addProduct(Product product) {
-        User user = userService.getByLogin(userHolder.getAuthentication().getName());
-        if(getProduct(product.getId()) == null || user.getRole().equals(ERole.ROLE_ADMIN)) {
+        User user = userHolder.getUser();
+        if(productDAO.getById(product.getId()) == null || user.getRole().equals(ERole.ROLE_ADMIN)) {
             LocalDateTime timeStamp = LocalDateTime.now();
             product.setCreateDate(timeStamp);
             product.setUpdateDate(timeStamp);
@@ -52,7 +51,7 @@ public class ProductService implements IProductService {
     @Override
     public Page<Product> getProductList(Pageable pageable, String name) {
         if(name != null) {
-            return productDAO.findProductsByName(name, pageable);
+            return productDAO.findProductsByProductName(name, pageable);
         } else {
             return productDAO.findAll(pageable);
         }

@@ -18,17 +18,16 @@ import java.util.List;
 public class ProfileService implements IProfileService {
     private final IProfileDAO profileDAO;
     private final UserHolder userHolder;
-    private final IUserService userService;
 
-    public ProfileService(IProfileDAO profileDAO, UserHolder userHolder, IUserService userService) {
+
+    public ProfileService(IProfileDAO profileDAO, UserHolder userHolder) {
         this.profileDAO = profileDAO;
         this.userHolder = userHolder;
-        this.userService = userService;
     }
 
     @Override
     public void addProfile(Profile profile) {
-        User user = userService.getByLogin(userHolder.getAuthentication().getName());
+        User user = userHolder.getUser();
         profile.setUser(user);
         LocalDateTime createTime = LocalDateTime.now();
         profile.setUpdateDate(createTime);
@@ -39,7 +38,7 @@ public class ProfileService implements IProfileService {
 
     @Override
     public Profile getProfile(long profileId) {
-        User user = userService.getByLogin(userHolder.getAuthentication().getName());
+        User user = userHolder.getUser();
         Profile profile =  profileDAO.findById(profileId).orElseThrow(()-> new IllegalArgumentException("По данному ID профиль не найден"));
         if (profile.getUser()== user || user.getRole().equals(ERole.ROLE_ADMIN)) {
             return profile;
@@ -56,7 +55,7 @@ public class ProfileService implements IProfileService {
 
     @Override
     public void updateProfile(Profile profile, long id) {
-        User user = userService.getByLogin(userHolder.getAuthentication().getName());
+        User user =userHolder.getUser();
         Profile updatableProfile = getProfile(id);
         if (profile.getUser()== user || user.getRole().equals(ERole.ROLE_ADMIN)) {
             updatableProfile.setUser(user);
@@ -79,7 +78,7 @@ public class ProfileService implements IProfileService {
 
     @Override
     public void deleteProfile(long id) {
-        User user = userService.getByLogin(userHolder.getAuthentication().getName());
+        User user = userHolder.getUser();
         Profile profile =  profileDAO.findById(id).orElseThrow(()-> new IllegalArgumentException("По данному ID профиль не найден"));
         if (profile.getUser()== user || user.getRole().equals(ERole.ROLE_ADMIN)) {
             profileDAO.deleteById(id);

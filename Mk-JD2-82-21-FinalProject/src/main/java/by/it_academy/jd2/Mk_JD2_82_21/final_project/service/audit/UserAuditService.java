@@ -2,6 +2,7 @@ package by.it_academy.jd2.Mk_JD2_82_21.final_project.service.audit;
 
 import by.it_academy.jd2.Mk_JD2_82_21.final_project.security.UserHolder;
 import by.it_academy.jd2.Mk_JD2_82_21.final_project.service.api.IAuditService;
+import by.it_academy.jd2.Mk_JD2_82_21.final_project.service.api.IAuthService;
 import by.it_academy.jd2.Mk_JD2_82_21.final_project.service.api.IUserService;
 import by.it_academy.jd2.Mk_JD2_82_21.final_project.storage.api.enums.EntityType;
 import by.it_academy.jd2.Mk_JD2_82_21.final_project.storage.model.Audit;
@@ -16,12 +17,12 @@ import org.springframework.stereotype.Service;
 public class UserAuditService {
     private final IAuditService auditService;
     private final UserHolder userHolder;
-    private final IUserService userService;
+    private final IAuthService authService;
 
-    public UserAuditService(IAuditService auditService, UserHolder userHolder, IUserService userService) {
+    public UserAuditService(IAuditService auditService, UserHolder userHolder, IAuthService authService) {
         this.auditService = auditService;
         this.userHolder = userHolder;
-        this.userService = userService;
+        this.authService = authService;
     }
 
     @After("execution(* by.it_academy.jd2.Mk_JD2_82_21.final_project.service.UserService.addUser(..))")
@@ -49,7 +50,7 @@ public class UserAuditService {
             audit.setDateOfCreate(user.getUpdateDate());
             audit.setActionInformation("Пользователь "+user.getName()+" обновил данные");
             String userLogin = userHolder.getAuthentication().getName();
-            User userByLogin = userService.getByLogin(userLogin);
+            User userByLogin = authService.getByLogin(userLogin);
             audit.setUser(userByLogin);
             audit.setEntityType(EntityType.USER);
             audit.setIdEntityOnWithTheActionIsPerformed(user.getId());

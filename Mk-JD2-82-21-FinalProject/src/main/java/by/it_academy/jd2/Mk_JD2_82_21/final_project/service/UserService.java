@@ -1,11 +1,13 @@
 package by.it_academy.jd2.Mk_JD2_82_21.final_project.service;
 
 import by.it_academy.jd2.Mk_JD2_82_21.final_project.dto.LoginDTO;
+import by.it_academy.jd2.Mk_JD2_82_21.final_project.security.UserHolder;
 import by.it_academy.jd2.Mk_JD2_82_21.final_project.service.api.IUserService;
 import by.it_academy.jd2.Mk_JD2_82_21.final_project.storage.api.dao.IUserDAO;
 import by.it_academy.jd2.Mk_JD2_82_21.final_project.storage.api.enums.ERole;
 import by.it_academy.jd2.Mk_JD2_82_21.final_project.storage.api.enums.EStatus;
 import by.it_academy.jd2.Mk_JD2_82_21.final_project.storage.model.User;
+import by.it_academy.jd2.Mk_JD2_82_21.final_project.utils.CheckUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,13 +18,18 @@ import java.util.List;
 
 @Service
 public class UserService implements IUserService {
-    private static IUserDAO userDAO;
-    private static PasswordEncoder passwordEncoder;
+    private final IUserDAO userDAO;
+    private final PasswordEncoder passwordEncoder;
+    private final UserHolder userHolder;
+    private final CheckUtil checkUtil;
 
-    public UserService (IUserDAO userDAO, PasswordEncoder passwordEncoder) {
+    public UserService(IUserDAO userDAO, PasswordEncoder passwordEncoder, UserHolder userHolder, CheckUtil checkUtil) {
         this.userDAO = userDAO;
         this.passwordEncoder = passwordEncoder;
+        this.userHolder = userHolder;
+        this.checkUtil = checkUtil;
     }
+
     @Override
     public void addUser(User user) {
         LocalDateTime createTime = LocalDateTime.now();
@@ -51,26 +58,19 @@ public class UserService implements IUserService {
         User updateUser = getUser(id);
         if (updateUser == null) {
             throw new IllegalArgumentException("Пользователь с таким ID не найден");
-        } else {
+        } else if (updateUser==userHolder.getUser() || checkUtil.isAdminRoleCheck()) {
             updateUser.setName(user.getName());
             updateUser.setLogin(user.getLogin());
             updateUser.setPassword(passwordEncoder.encode(user.getPassword()));
-            updateUser.setRole(user.getRole());
-            updateUser.setStatus(user.getStatus());
+            if(checkUtil.isAdminRoleCheck()) {
+                updateUser.setRole(user.getRole());
+            } else {
+                updateUser.setRole(userHolder.getUser().getRole());
+            }
+            updateUser.setStatus(userHolder.getUser().getStatus());
+            updateUser.setCreateDate(userHolder.getUser().getCreateDate());
+            updateUser.setUpdateDate(LocalDateTime.now());
             userDAO.save(updateUser);
         }
     }
-
-    @Override
-    public User getByLoginAndPassword(LoginDTO loginDto) {
-        User byLoginAndPassword = userDAO.findByLoginAndPassword(loginDto.getLogin(), loginDto.getPassword());
-        return byLoginAndPassword;
-    }
-
-    @Override
-    public User getByLogin(String login) {
-        User byLogin = userDAO.findByLogin(login);
-        return byLogin;
-    }
-
 }

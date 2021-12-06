@@ -13,6 +13,4 @@ public interface IUserService {
     public User getUser(long userId);
     public Page<User> getUserList(Pageable pageable);
     public void updateUser(User user, long id);
-    public User getByLogin(String login);
-    public User getByLoginAndPassword(LoginDTO loginDto);
 }

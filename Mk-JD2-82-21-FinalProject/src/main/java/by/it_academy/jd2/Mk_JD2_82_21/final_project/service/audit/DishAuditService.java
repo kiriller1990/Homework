@@ -2,6 +2,7 @@ package by.it_academy.jd2.Mk_JD2_82_21.final_project.service.audit;
 
 import by.it_academy.jd2.Mk_JD2_82_21.final_project.security.UserHolder;
 import by.it_academy.jd2.Mk_JD2_82_21.final_project.service.api.IAuditService;
+import by.it_academy.jd2.Mk_JD2_82_21.final_project.service.api.IAuthService;
 import by.it_academy.jd2.Mk_JD2_82_21.final_project.service.api.IUserService;
 import by.it_academy.jd2.Mk_JD2_82_21.final_project.storage.api.enums.EntityType;
 import by.it_academy.jd2.Mk_JD2_82_21.final_project.storage.model.Audit;
@@ -19,12 +20,12 @@ import java.time.LocalDateTime;
 public class DishAuditService {
     private final IAuditService auditService;
     private final UserHolder userHolder;
-    private final IUserService userService;
+    private final IAuthService authService;
 
-    public DishAuditService(IAuditService auditService, UserHolder userHolder, IUserService userService) {
+    public DishAuditService(IAuditService auditService, UserHolder userHolder, IAuthService authService) {
         this.auditService = auditService;
         this.userHolder = userHolder;
-        this.userService = userService;
+        this.authService = authService;
     }
 
     @After("execution(* by.it_academy.jd2.Mk_JD2_82_21.final_project.service.DishService.addDish(..))")
@@ -53,7 +54,7 @@ public class DishAuditService {
             Audit audit = new Audit();
             audit.setDateOfCreate(dish.getUpdateDate());
             String userLogin = this.userHolder.getAuthentication().getName();
-            User user = userService.getByLogin(userLogin);
+            User user = authService.getByLogin(userLogin);
             audit.setUser(user);
             audit.setEntityType(EntityType.DISH);
             audit.setIdEntityOnWithTheActionIsPerformed(dish.getId());
@@ -73,7 +74,7 @@ public class DishAuditService {
             Audit audit = new Audit();
             audit.setDateOfCreate(LocalDateTime.now());
             String userLogin = userHolder.getAuthentication().getName();
-            User user = userService.getByLogin(userLogin);
+            User user = authService.getByLogin(userLogin);
             audit.setUser(user);
             audit.setEntityType(EntityType.DISH);
             audit.setIdEntityOnWithTheActionIsPerformed(dishId);

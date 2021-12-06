@@ -23,19 +23,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-
-                // GET GetAll Users Only ADMIN
-                // POST add new product ADMIN
-
-                .httpBasic().disable()
                 .csrf().disable()
                 .authorizeRequests()
-                //.antMatchers("/api/user/login","/api/user/register*").anonymous()
-                .antMatchers("/api/**").hasRole("ADMIN")
-               // .antMatchers(HttpMethod.GET,"/api/product/**","/api/recipe/**","/api/profile/{id_profile}")
-                //.hasAnyRole("ADMIN","USER")
-                //.antMatchers(HttpMethod.GET,"/api/product/").hasRole("USER,ADMIN")
-                //.antMatchers("/api/user/**").anonymous()
+                .antMatchers("/api/user/register","/api/user/login").anonymous()
+                .antMatchers(HttpMethod.PUT,"/api/user/**").hasAnyRole("USER","ADMIN")
+                .antMatchers(HttpMethod.POST,"api/product").hasRole("ADMIN")
+                //.antMatchers("/api/**").hasRole("ADMIN")
+
+                .antMatchers(HttpMethod.GET,"/api/user/**","/api/recipe/*").hasRole("ADMIN")
+                //.antMatchers("/api/profile/").hasRole("USER")
+
                 //.antMatchers("/api/product/**").hasRole("USER")
 
                 .anyRequest().authenticated()
@@ -49,3 +46,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
 }
+// GET GetAll Users Only ADMIN
+// POST add new product ADMIN
