@@ -9,8 +9,11 @@ import by.it_academy.jd2.Mk_JD2_82_21.final_project.storage.model.Audit;
 import by.it_academy.jd2.Mk_JD2_82_21.final_project.storage.model.User;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Aspect
 @Service
@@ -25,35 +28,37 @@ public class UserAuditService {
         this.authService = authService;
     }
 
-    @After("execution(* by.it_academy.jd2.Mk_JD2_82_21.final_project.service.UserService.addUser(..))")
+    @AfterReturning("execution(* by.it_academy.jd2.Mk_JD2_82_21.final_project.service.UserService.addUser(..))")
     public void addUser(JoinPoint joinPoint){
         try {
             Object[] args = joinPoint.getArgs();
             User user = (User) args[0];
             Audit audit = new Audit();
-            audit.setDateOfCreate(user.getUpdateDate());
+            User addUser = authService.getByLogin(user.getLogin());
+            audit.setUser(addUser);
+            audit.setDateOfCreate(LocalDateTime.now());
             audit.setActionInformation("Пользователь "+user.getName()+" зарегистрировался в приложении!");
-            audit.setEntityType(EntityType.USER);
-            audit.setIdEntityOnWithTheActionIsPerformed(user.getId());
+            audit.setEntityType("User");
+            audit.setEntityId(addUser.getId());
             auditService.addAudit(audit);
         }catch (Throwable e){
             throw new IllegalArgumentException("Ошибка в работе аудита при добавлении пользователя");
         }
     }
 
-    @After("execution(* by.it_academy.jd2.Mk_JD2_82_21.final_project.service.UserService.updateUser(..))")
+    @AfterReturning("execution(* by.it_academy.jd2.Mk_JD2_82_21.final_project.service.UserService.updateUser(..))")
     public void updateUser(JoinPoint joinPoint){
         try {
             Object[] args = joinPoint.getArgs();
             User user = (User) args[0];
             Audit audit = new Audit();
-            audit.setDateOfCreate(user.getUpdateDate());
-            audit.setActionInformation("Пользователь "+user.getName()+" обновил данные");
-            String userLogin = userHolder.getAuthentication().getName();
-            User userByLogin = authService.getByLogin(userLogin);
-            audit.setUser(userByLogin);
-            audit.setEntityType(EntityType.USER);
-            audit.setIdEntityOnWithTheActionIsPerformed(user.getId());
+            User userWhoMadeTheChange = userHolder.getUser();
+            audit.setDateOfCreate(LocalDateTime.now());
+            audit.setActionInformation("Пользователь "+userWhoMadeTheChange.getName()+" обновил данные");
+            long userId =userHolder.getUser().getId();
+            audit.setUser(userWhoMadeTheChange);
+            audit.setEntityType("User");
+            audit.setEntityId(userId);
             auditService.addAudit(audit);
         }catch (Throwable e){
             throw new IllegalArgumentException("Ошибка в работе аудита при обновлении пользователя");

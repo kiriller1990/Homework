@@ -28,13 +28,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/user/register","/api/user/login").anonymous()
                 .antMatchers(HttpMethod.PUT,"/api/user/**").hasAnyRole("USER","ADMIN")
                 .antMatchers(HttpMethod.POST,"api/product").hasRole("ADMIN")
-                //.antMatchers("/api/**").hasRole("ADMIN")
-
-                .antMatchers(HttpMethod.GET,"/api/user/**","/api/recipe/*").hasRole("ADMIN")
-                //.antMatchers("/api/profile/").hasRole("USER")
-
-                //.antMatchers("/api/product/**").hasRole("USER")
-
+                .antMatchers(HttpMethod.GET,"api/user/*").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
@@ -46,5 +40,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
 }
-// GET GetAll Users Only ADMIN
-// POST add new product ADMIN
+

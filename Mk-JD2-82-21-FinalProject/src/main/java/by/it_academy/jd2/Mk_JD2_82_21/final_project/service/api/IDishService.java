@@ -9,9 +9,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface IDishService {
-    public void addDish(DishDTO dishDTO);
+    public Dish addDish(DishDTO dishDTO);
     public Dish getDish(long dishId);
     public Page<Dish> getDishList(Pageable pageable, String name);
-    void updateDish(Dish dish, long id, LocalDateTime dt_update);
-    void deleteDish(long id, LocalDateTime dt_update);
+    public void deleteDish(long id);
 }

@@ -1,15 +1,13 @@
 package by.it_academy.jd2.Mk_JD2_82_21.final_project.service.audit;
 
 import by.it_academy.jd2.Mk_JD2_82_21.final_project.security.UserHolder;
-import by.it_academy.jd2.Mk_JD2_82_21.final_project.service.api.IAuditService;
-import by.it_academy.jd2.Mk_JD2_82_21.final_project.service.api.IAuthService;
-import by.it_academy.jd2.Mk_JD2_82_21.final_project.service.api.IUserService;
+import by.it_academy.jd2.Mk_JD2_82_21.final_project.service.api.*;
+import by.it_academy.jd2.Mk_JD2_82_21.final_project.storage.api.dao.IFoodDiaryDAO;
 import by.it_academy.jd2.Mk_JD2_82_21.final_project.storage.api.enums.EntityType;
-import by.it_academy.jd2.Mk_JD2_82_21.final_project.storage.model.Audit;
-import by.it_academy.jd2.Mk_JD2_82_21.final_project.storage.model.FoodDiary;
-import by.it_academy.jd2.Mk_JD2_82_21.final_project.storage.model.User;
+import by.it_academy.jd2.Mk_JD2_82_21.final_project.storage.model.*;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Service;
 
@@ -21,70 +19,69 @@ public class FoodDiaryAuditService {
     private final IAuditService auditService;
     private final UserHolder userHolder;
     private final IAuthService authService;
+    private final IFoodDiaryService foodDiaryService;
+    private final IFoodDiaryDAO foodDiaryDAO;
 
-    public FoodDiaryAuditService(IAuditService auditService, UserHolder userHolder, IAuthService authService) {
+    public FoodDiaryAuditService(IAuditService auditService, UserHolder userHolder, IAuthService authService,
+                                 IFoodDiaryService foodDiaryService, IFoodDiaryDAO foodDiaryDAO) {
         this.auditService = auditService;
         this.userHolder = userHolder;
         this.authService = authService;
+        this.foodDiaryService = foodDiaryService;
+        this.foodDiaryDAO = foodDiaryDAO;
     }
 
-    @After("execution(* by.it_academy.jd2.Mk_JD2_82_21.final_project.service.FoodDiaryService.addFoodDiary(..))")
-    public void addJournal(JoinPoint joinPoint){
+    @AfterReturning(value ="execution(* by.it_academy.jd2.Mk_JD2_82_21.final_project.service.FoodDiaryService.addFoodDiary(..))"
+                    ,returning = "result")
+    public void addFoodDiary(JoinPoint joinPoint , Object result){
         try {
-            Object[] args = joinPoint.getArgs();
-            FoodDiary foodDiary =(FoodDiary) args[0];
+            FoodDiary foodDiary = (FoodDiary) result;
             Audit audit = new Audit();
-            audit.setDateOfCreate(foodDiary.getUpdateDate());
-            String userLogin = userHolder.getAuthentication().getName();
-            User user = authService.getByLogin(userLogin);
-            audit.setUser(user);
-            audit.setEntityType(EntityType.DAIRY);
-            audit.setIdEntityOnWithTheActionIsPerformed(foodDiary.getId());
-            audit.setActionInformation("Пользователь "+user.getName()+
-                    " добавил запись ");
+            User addUser = userHolder.getUser();
+            audit.setUser(addUser);
+            audit.setDateOfCreate(LocalDateTime.now());
+            audit.setActionInformation("Пользователь "+addUser.getName()+ " добавил дневник питания");
+            audit.setEntityType("FoodDiary");
+            audit.setEntityId(foodDiary.getId());
             auditService.addAudit(audit);
         }catch (Throwable e){
             throw new IllegalArgumentException("Ошибка в работе аудита при добавлении дневника питания");
         }
     }
 
-    @After("execution(* by.it_academy.jd2.Mk_JD2_82_21.final_project.service.FoodDiaryService.updateFoodDiary(..))")
-    public void updateJournal(JoinPoint joinPoint){
+    @AfterReturning("execution(* by.it_academy.jd2.Mk_JD2_82_21.final_project.service.FoodDiaryService.updateFoodDiary(..))")
+    public void updateDish(JoinPoint joinPoint) {
         try {
             Object[] args = joinPoint.getArgs();
-            FoodDiary foodDiary =(FoodDiary) args[0];
+            long foodDiaryId = (long) args[2];
             Audit audit = new Audit();
-            audit.setDateOfCreate(foodDiary.getUpdateDate());
-            String userLogin = userHolder.getAuthentication().getName();
-            User user = authService.getByLogin(userLogin);
-            audit.setUser(user);
-            audit.setEntityType(EntityType.DAIRY);
-            audit.setIdEntityOnWithTheActionIsPerformed(foodDiary.getId());
-            audit.setActionInformation("Пользователь "+user.getName()+
-                    " обновил запись ");
+            User userWhoMadeTheChange = userHolder.getUser();
+            audit.setDateOfCreate(LocalDateTime.now());
+            audit.setActionInformation("Пользователь " + userWhoMadeTheChange.getName() + " обновил дневник питания");
+            audit.setUser(userWhoMadeTheChange);
+            audit.setEntityType("FoodDiary");
+            audit.setEntityId(foodDiaryId);
             auditService.addAudit(audit);
-        }catch (Throwable e){
+        } catch (Throwable e) {
             throw new IllegalArgumentException("Ошибка в работе аудита при обновлении дневника питания");
         }
     }
 
-    @After("execution(* by.it_academy.jd2.Mk_JD2_82_21.final_project.service.FoodDiaryService.deleteFoodDiary(..))")
-    public void deleteJournal(JoinPoint joinPoint) {
+    @AfterReturning("execution(* by.it_academy.jd2.Mk_JD2_82_21.final_project.service.FoodDiaryService.deleteFoodDiary(..))")
+    public void deleteProduct(JoinPoint joinPoint) {
         try {
             Object[] args = joinPoint.getArgs();
-            Long foodDiarylId = (Long) args[0];
+            long foodDiaryId = (Long) args[1];
             Audit audit = new Audit();
+            User userWhoMadeTheChange = userHolder.getUser();
             audit.setDateOfCreate(LocalDateTime.now());
-            String userLogin = userHolder.getAuthentication().getName();
-            User user = authService.getByLogin(userLogin);
-            audit.setUser(user);
-            audit.setEntityType(EntityType.DAIRY);
-            audit.setIdEntityOnWithTheActionIsPerformed(foodDiarylId);
-            audit.setActionInformation("Пользователь " + user.getName() + " удалил запись "+ foodDiarylId + " из дневника питания");
+            audit.setActionInformation("Пользователь " + userWhoMadeTheChange.getName() + " удалил дневник питания");
+            audit.setUser(userWhoMadeTheChange);
+            audit.setEntityType("FoodDiary");
+            audit.setEntityId(foodDiaryId);
             auditService.addAudit(audit);
         } catch (Throwable e) {
             throw new IllegalArgumentException("Ошибка в работе аудита при удалении дневника питания");
         }
     }
-    
 }

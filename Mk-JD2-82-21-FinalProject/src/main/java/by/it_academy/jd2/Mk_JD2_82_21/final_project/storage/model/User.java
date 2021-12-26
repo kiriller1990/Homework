@@ -4,6 +4,10 @@ import by.it_academy.jd2.Mk_JD2_82_21.final_project.storage.api.enums.ERole;
 import by.it_academy.jd2.Mk_JD2_82_21.final_project.storage.api.enums.EStatus;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @Entity
@@ -17,15 +21,22 @@ public class User {
     private String name;
 
     @Column(unique = true)
+    @Email(message = "Please use your e-mail as login")
+    @NotBlank
     private String login;
 
     @Column
+    @Size(min = 6, message = "your password must be longer than 6 ")
+   // @Pattern(regexp = ("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])"))
+    @NotBlank
     private String password;
 
     @Column
+    @Enumerated(EnumType.STRING)
     private ERole role;
 
     @Column
+    @Enumerated(EnumType.STRING)
     private EStatus status;
 
     @Column

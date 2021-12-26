@@ -54,31 +54,29 @@ public class CaloriesCalculationService implements ICaloriesCalculationService {
             carbohydratesCount = productCarbohydratesInDish;
 
         }else if(foodDiary.getDish()!= null) {
-            List<Ingredient> dish = foodDiary.getDish().getIngredients();
+            List<Ingredient> ingredients = foodDiary.getDish().getIngredients();
 
             //Рассчет КБЖУ для каждого продукта в блюде
-            for(int i=0;i<=(dish.size()+1);i++){
+            for(int i=0;i<=(ingredients.size()-1);i++){
                 //получение продукта в блюде
-                Product productInDish = dish.get(i).getProduct();
+                    Product productInDish = ingredients.get(i).getProduct();
+                    //получение КБЖУ в продукте
+                    double caloriesInProduct = productInDish.getCalories();
+                    double proteinsInProduct = productInDish.getProteins();
+                    double fatsInProduct = productInDish.getFats();
+                    double carbohydratesInProduct = productInDish.getCarbohydrates();
 
-                //получение КБЖУ в продукте
-                double caloriesInProduct = productInDish.getCalories();
-                double proteinsInProduct = productInDish.getProteins();
-                double fatsInProduct = productInDish.getFats();
-                double carbohydratesInProduct = productInDish.getCarbohydrates();
+                    //вес продукта
+                    double productWeight = productInDish.getWeight();
 
-                //вес продукта
-                double productWeight = productInDish.getWeight();
+                    //КБЖУ в 1 грамме продукта
+                    double caloriesInOneGram = caloriesInProduct / productWeight;
+                    double proteinsInOneGram = proteinsInProduct / productWeight;
+                    double fatsInOneGram = fatsInProduct / productWeight;
+                    double carbohydratesInOneGram = carbohydratesInProduct / productWeight;
 
-                //КБЖУ в 1 грамме продукта
-                double caloriesInOneGram= caloriesInProduct  / productWeight;
-                double proteinsInOneGram = proteinsInProduct/productWeight;
-                double fatsInOneGram = fatsInProduct/productWeight;
-                double carbohydratesInOneGram = carbohydratesInProduct/productWeight;
-
-                //Вес продукта в блюде
-                double weightProductInDish = dish.get(i).getWeight();
-
+                    //Вес продукта в блюде
+                    double weightProductInDish = ingredients.get(i).getWeight();
                 // Рассчет КБЖУ продукта в блюде
                 double productCaloriesInDish = caloriesInOneGram * weightProductInDish;
                 double productProteinsInDish = proteinsInOneGram * weightProductInDish;

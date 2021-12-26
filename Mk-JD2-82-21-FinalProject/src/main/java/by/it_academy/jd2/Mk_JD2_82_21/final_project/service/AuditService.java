@@ -35,7 +35,7 @@ public class AuditService implements IAuditService {
         updateAudit.setUser(audit.getUser());
         updateAudit.setActionInformation(audit.getActionInformation());
         updateAudit.setEntityType(audit.getEntityType());
-        updateAudit.setIdEntityOnWithTheActionIsPerformed(audit.getIdEntityOnWithTheActionIsPerformed());
+        updateAudit.setEntityId(audit.getEntityId());
         auditDAO.save(updateAudit);
     }
 

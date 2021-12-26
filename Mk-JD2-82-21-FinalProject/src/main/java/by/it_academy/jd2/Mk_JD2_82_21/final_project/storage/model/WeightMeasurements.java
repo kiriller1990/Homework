@@ -1,12 +1,15 @@
 package by.it_academy.jd2.Mk_JD2_82_21.final_project.storage.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "weight_measurements")
-public class WeightMeasurements {
+public class WeightMeasurements implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -15,6 +18,7 @@ public class WeightMeasurements {
     @Column
     private long weight;
     @Column
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy")
     private LocalDate dateOfWeighings;
     @Column
     private LocalDateTime createDate;
@@ -45,6 +49,14 @@ public class WeightMeasurements {
 
     public void setWeight(long weight) {
         this.weight = weight;
+    }
+
+    public LocalDate getDateOfWeighings() {
+        return dateOfWeighings;
+    }
+
+    public void setDateOfWeighings(LocalDate dateOfWeighings) {
+        this.dateOfWeighings = dateOfWeighings;
     }
 
     public LocalDateTime getCreateDate() {

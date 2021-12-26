@@ -1,11 +1,12 @@
 package by.it_academy.jd2.Mk_JD2_82_21.final_project.storage.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
 @Entity
 @Table(name = "ingredient")
-public class Ingredient {
+public class Ingredient implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

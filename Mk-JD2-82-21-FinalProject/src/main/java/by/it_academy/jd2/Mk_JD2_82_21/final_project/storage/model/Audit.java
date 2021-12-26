@@ -12,12 +12,12 @@ public class Audit {
     private long id;
     @OneToOne
     private User user;
-    @Column (name = "action_information")
+    @Column(name = "action_information")
     private String actionInformation;
     @Column(name = "entityType")
-    private EntityType entityType;
-    @Column (name= "id_entity_on_witch_the_action_is_performed")
-    private long idEntityOnWithTheActionIsPerformed;
+    private String entityType;
+    @Column(name = "entity_id")
+    private long entityId;
     @Column
     private LocalDateTime dateOfCreate;
 
@@ -49,20 +49,20 @@ public class Audit {
         this.actionInformation = actionInformation;
     }
 
-    public EntityType getEntityType() {
+    public String getEntityType() {
         return entityType;
     }
 
-    public void setEntityType(EntityType entityType) {
+    public void setEntityType(String entityType) {
         this.entityType = entityType;
     }
 
-    public long getIdEntityOnWithTheActionIsPerformed() {
-        return idEntityOnWithTheActionIsPerformed;
+    public long getEntityId() {
+        return entityId;
     }
 
-    public void setIdEntityOnWithTheActionIsPerformed(long idEntityOnWithTheActionIsPerformed) {
-        this.idEntityOnWithTheActionIsPerformed = idEntityOnWithTheActionIsPerformed;
+    public void setEntityId(long entityId) {
+        this.entityId = entityId;
     }
 
     public LocalDateTime getDateOfCreate() {
@@ -73,3 +73,4 @@ public class Audit {
         this.dateOfCreate = dateOfCreate;
     }
 }
+

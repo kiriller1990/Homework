@@ -3,10 +3,7 @@ package by.it_academy.jd2.Mk_JD2_82_21.final_project.service;
 import by.it_academy.jd2.Mk_JD2_82_21.final_project.dto.CaloriesInDishCalculationDTO;
 import by.it_academy.jd2.Mk_JD2_82_21.final_project.dto.FoodDiaryDTO;
 import by.it_academy.jd2.Mk_JD2_82_21.final_project.security.UserHolder;
-import by.it_academy.jd2.Mk_JD2_82_21.final_project.service.api.ICaloriesCalculationService;
-import by.it_academy.jd2.Mk_JD2_82_21.final_project.service.api.IFoodDiaryService;
-import by.it_academy.jd2.Mk_JD2_82_21.final_project.service.api.IProfileService;
-import by.it_academy.jd2.Mk_JD2_82_21.final_project.service.api.IUserService;
+import by.it_academy.jd2.Mk_JD2_82_21.final_project.service.api.*;
 import by.it_academy.jd2.Mk_JD2_82_21.final_project.storage.api.dao.IFoodDiaryDAO;
 import by.it_academy.jd2.Mk_JD2_82_21.final_project.storage.api.dao.IProfileDAO;
 import by.it_academy.jd2.Mk_JD2_82_21.final_project.storage.api.enums.ERole;
@@ -19,6 +16,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -27,49 +25,68 @@ public class FoodDiaryService implements IFoodDiaryService {
     private final IProfileService profileService;
     private final ICaloriesCalculationService caloriesCalculationService;
     private final UserHolder userHolder;
+    private final IDishService dishService;
+    private final IProductService productService;
 
 
     public FoodDiaryService(IFoodDiaryDAO foodDiaryDAO, IProfileService profileService,
                             ICaloriesCalculationService caloriesCalculationService,
-                            UserHolder userHolder) {
+                            UserHolder userHolder, IDishService dishService, IProductService productService) {
         this.foodDiaryDAO = foodDiaryDAO;
         this.profileService = profileService;
         this.caloriesCalculationService = caloriesCalculationService;
         this.userHolder = userHolder;
+        this.dishService = dishService;
+        this.productService = productService;
     }
 
     @Override
-    public void addFoodDiary(FoodDiary foodDiary,long id_profile) {
+    public FoodDiary addFoodDiary(FoodDiary foodDiary,long idProfile) {
         User user = userHolder.getUser();
-        Profile profile = profileService.getProfile(id_profile);
+        Profile profile = profileService.getProfile(idProfile);
         if(profile.getUser().getId() == user.getId() || user.getRole().equals(ERole.ROLE_ADMIN)) {
             LocalDateTime timeStamp = LocalDateTime.now();
             foodDiary.setCreateDate(timeStamp);
             foodDiary.setUpdateDate(timeStamp);
-            foodDiary.setProfile(profileService.getProfile(id_profile));
+            foodDiary.setProfile(profileService.getProfile(idProfile));
             if(foodDiary.getDish()!=null) {
-                foodDiary.setDish(foodDiary.getDish());
+                foodDiary.setDish(dishService.getDish(foodDiary.getDish().getId()));
             }
-            if (foodDiary.getProduct()!=null) {
-                foodDiary.setProduct(foodDiary.getProduct());
+            if (foodDiary.getProduct()!= null) {
+                foodDiary.setProduct(productService.getProduct(foodDiary.getProduct().getId()));
             }
-            foodDiaryDAO.save(foodDiary);
+           return foodDiaryDAO.save(foodDiary);
         } else {
-            throw new IllegalCallerException ("Добавлять дневник питания можно только в свой профиль");
+            throw new IllegalArgumentException ("Добавлять дневник питания можно только в свой профиль");
         }
     }
 
     @Override
-    public List<FoodDiary> getAllMealsInADay(long day, long id_profile) {
-        LocalDateTime startDay = Instant.ofEpochMilli(day).atZone(ZoneId.systemDefault()).toLocalDateTime();
-        LocalDateTime endDay = startDay.plusDays(1);
-        return foodDiaryDAO.findAllByProfileIdAndUpdateDateBetween(id_profile,startDay,endDay);
+    public List<FoodDiaryDTO> getAllMealsInADay(long day, long idProfile) {
+        User user = userHolder.getUser();
+        Profile profile = profileService.getProfile(idProfile);
+        if(profile.getUser().getId() == user.getId() || user.getRole().equals(ERole.ROLE_ADMIN)) {
+            LocalDateTime startDay = Instant.ofEpochMilli(day).atZone(ZoneId.systemDefault()).toLocalDateTime();
+            LocalDateTime endDay = startDay.plusDays(1);
+            List<FoodDiary> foodDiariesInDay = foodDiaryDAO.findAllByProfileIdAndUpdateDateBetween(idProfile, startDay, endDay);
+            List<FoodDiaryDTO> foodDiariesInDayDTO = countingCaloriesReceivedForDay(foodDiariesInDay);
+            return foodDiariesInDayDTO;
+        } else {
+            throw new IllegalArgumentException("Вы можете просматривать только свои дневники питания");
+        }
     }
 
     @Override
-    public FoodDiaryDTO getFoodDiaryCard(long id_profile, long id_food) {
-        FoodDiaryDTO foodDiaryDTO =countingCaloriesReceived(foodDiaryDAO.findFoodDiaryByProfileIdAndId(id_profile,id_food));
-        return foodDiaryDTO;
+    public FoodDiaryDTO getFoodDiaryCard(long idProfile, long idFood) {
+        User user = userHolder.getUser();
+        Profile profile = profileService.getProfile(idProfile);
+        if(profile.getUser().getId() == user.getId() || user.getRole().equals(ERole.ROLE_ADMIN)) {
+            FoodDiaryDTO foodDiaryDTO =countingCaloriesReceived(foodDiaryDAO.findById(idFood).orElseThrow(()->
+                new IllegalArgumentException ("По данному ID запись в дневнике питания не найдена")));
+            return foodDiaryDTO;
+        } else {
+            throw new IllegalArgumentException("Вы можете просматривать только свои дневники питания");
+        }
     }
 
 
@@ -86,19 +103,48 @@ public class FoodDiaryService implements IFoodDiaryService {
     }
 
     @Override
-    public void updateFoodDiary(FoodDiary foodDiary, LocalDateTime dt_update, long id_profile, long id_food) {
-        FoodDiary updateFoodDiary = foodDiaryDAO.findFoodDiaryByProfileIdAndId(id_profile,id_food);
-        updateFoodDiary.setProfile(foodDiary.getProfile());
-        updateFoodDiary.setEatingTimeType(foodDiary.getEatingTimeType());
-        updateFoodDiary.setProduct(foodDiary.getProduct());
-        updateFoodDiary.setDish(foodDiary.getDish());
-        updateFoodDiary.setWeight(foodDiary.getWeight());
-        foodDiaryDAO.save(updateFoodDiary);
+    public void updateFoodDiary(FoodDiary foodDiary, long idProfile, long idFood) {
+        User user = userHolder.getUser();
+        Profile profile = profileService.getProfile(idProfile);
+
+        if(profile.getUser().getId() == user.getId() || user.getRole().equals(ERole.ROLE_ADMIN)) {
+            FoodDiary foodDiaryToUpdate = foodDiaryDAO.findById(idFood).orElseThrow(()->
+                    new IllegalArgumentException ("По данному ID запись в дневнике питания не найдена"));
+            foodDiaryToUpdate.setProfile(profileService.getProfile(idProfile));
+            if(foodDiary.getProduct()!=null) {
+                foodDiaryToUpdate.setProduct(productService.getProduct(foodDiary.getProduct().getId()));
+            }
+            if (foodDiary.getDish() != null) {
+                foodDiary.setDish(dishService.getDish(foodDiary.getDish().getId()));
+            }
+            foodDiaryToUpdate.setEatingTimeType(foodDiary.getEatingTimeType());
+            foodDiaryToUpdate.setWeight(foodDiary.getWeight());
+            foodDiaryToUpdate.setUpdateDate(LocalDateTime.now());
+            foodDiaryDAO.save(foodDiaryToUpdate);
+        }else {
+            throw new IllegalArgumentException("Вы можете обновлять только свои дневники питания");
+        }
     }
 
     @Override
-    public void deleteFoodDiary(long id) {
-        foodDiaryDAO.deleteById(id);
+    public void deleteFoodDiary( long idProfile, long idFood) {
+        User user = userHolder.getUser();
+        Profile profile = profileService.getProfile(idProfile);
+
+        if(profile.getUser().getId() == user.getId() || user.getRole().equals(ERole.ROLE_ADMIN)) {
+        foodDiaryDAO.deleteById(idFood);
+        }else {
+            throw new IllegalArgumentException("Вы можете удалить только свой дневник питания");
+        }
+    }
+
+    public List<FoodDiaryDTO> countingCaloriesReceivedForDay (List<FoodDiary> foodDiaries) {
+        List<FoodDiaryDTO> foodDiaryDTOList = new ArrayList<>();
+        for (FoodDiary foodDiary : foodDiaries)  {
+               FoodDiaryDTO foodDiaryDTO = countingCaloriesReceived(foodDiary);
+               foodDiaryDTOList.add(foodDiaryDTO);
+        }
+        return  foodDiaryDTOList;
     }
 
     @Override
@@ -110,6 +156,7 @@ public class FoodDiaryService implements IFoodDiaryService {
         foodDiaryDTO.setProfile(foodDiary.getProfile());
         foodDiaryDTO.setEatingTimeType(foodDiary.getEatingTimeType());
         foodDiaryDTO.setDish(foodDiary.getDish());
+        foodDiaryDTO.setProduct(foodDiary.getProduct());
         foodDiaryDTO.setWeight(foodDiary.getWeight());
         foodDiaryDTO.setCreateDate(updateDate);
         foodDiaryDTO.setUpdateDate(updateDate);

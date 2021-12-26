@@ -11,6 +11,7 @@ import by.it_academy.jd2.Mk_JD2_82_21.final_project.storage.model.Dish;
 import by.it_academy.jd2.Mk_JD2_82_21.final_project.storage.model.Ingredient;
 import by.it_academy.jd2.Mk_JD2_82_21.final_project.storage.model.Product;
 import by.it_academy.jd2.Mk_JD2_82_21.final_project.storage.model.User;
+import by.it_academy.jd2.Mk_JD2_82_21.final_project.utils.CheckUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.parameters.P;
@@ -25,47 +26,40 @@ public class DishService implements IDishService {
     private final IDishDAO dishDAO;
     private final UserHolder userHolder;
     private final IProductService productService;
+    private final CheckUtil checkUtil;
+    private final IIngredientService ingredientService;
 
-    public DishService(IDishDAO dishDAO, UserHolder userHolder, IProductService productService) {
+    public DishService(IDishDAO dishDAO, UserHolder userHolder,
+                       IProductService productService, CheckUtil checkUtil, IIngredientService ingredientService) {
         this.dishDAO = dishDAO;
         this.userHolder = userHolder;
         this.productService = productService;
+        this.checkUtil = checkUtil;
+        this.ingredientService = ingredientService;
     }
 
     @Override
-    public void addDish(DishDTO dishDTO) {
+    public Dish addDish(DishDTO dishDTO) {
         Dish dish = new Dish();
         LocalDateTime createDateTime = LocalDateTime.now();
         dish.setCreateDate(createDateTime);
         dish.setUpdateDate(createDateTime);
         dish.setUserWhoMadeTheEntry(userHolder.getUser());
         dish.setTitle(dishDTO.getName());
+        dish.setIngredients(getIngredientListInDish(dishDTO));
+        Dish savedDish = dishDAO.save(dish);
+        return savedDish;
+    }
 
-            // Извлекая id продуктов и вес продуктов добавляем в блюдо список ингредиентов
+    public List<Ingredient> getIngredientListInDish (DishDTO dishDTO) {
         List<Ingredient> ingredients = dishDTO.getIngredients();
         List<Ingredient> ingredientInDishList = new ArrayList<>();
         Ingredient ingredientInDish = new Ingredient();
         for(Ingredient ingredient : ingredients) {
-                //получаем ID продукта которое передали
-            long idProductInDish = ingredient.getProduct().getId();
-
-                // По ID получаем продукт который будкт в блюде
-            Product productInDish = productService.getProduct(idProductInDish);
-
-                //добавляем продукт в ингредиент блюда
-            ingredientInDish.setProduct(productInDish);
-
-                //получаем вес который передали
-            double weightProductInDish = ingredient.getWeight();
-
-                //добавляем вес в ингредиент болюда
-            ingredientInDish.setWeight(weightProductInDish);
-
-            //добавляем в список ингредиентов блюда
-            ingredientInDishList.add(ingredientInDish);
+            Ingredient ingredientSaved = this.ingredientService.addIngredient(ingredient);
+            ingredientInDishList.add(ingredientSaved);
         }
-        dish.setIngredients(ingredientInDishList);
-        dishDAO.save(dish);
+        return  ingredientInDishList;
     }
 
     @Override
@@ -76,25 +70,21 @@ public class DishService implements IDishService {
     @Override
     public Page<Dish> getDishList(Pageable pageable, String name) {
         if(name != null) {
-            return dishDAO.findDishByTitle(name, pageable);
+            return dishDAO.findDishByTitleContains(name, pageable);
         } else {
             return dishDAO.findAll(pageable);
         }
     }
 
+
     @Override
-    public void updateDish(Dish dish, long id, LocalDateTime dt_update) {
-        LocalDateTime timeStamp = LocalDateTime.now();
+    public void deleteDish(long id) {
         Dish updatedDish = getDish(id);
-        updatedDish.setTitle(dish.getTitle());
-        updatedDish.setIngredients(dish.getIngredients());
-        updatedDish.setUpdateDate(timeStamp);
-        dishDAO.save(updatedDish);
-
-    }
-
-    @Override
-    public void deleteDish(long id, LocalDateTime dt_update) {
-        dishDAO.deleteById(id);
+        User updateUser = updatedDish.getUserWhoMadeTheEntry();
+        if (updateUser==userHolder.getUser() || checkUtil.isAdminRoleCheck()) {
+            dishDAO.deleteById(id);
+        } else {
+            throw new IllegalArgumentException("Вы не можете удалять чужое блюдо");
+        }
     }
 }

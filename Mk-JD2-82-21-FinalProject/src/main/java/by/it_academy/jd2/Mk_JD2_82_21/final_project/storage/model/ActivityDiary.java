@@ -1,5 +1,7 @@
 package by.it_academy.jd2.Mk_JD2_82_21.final_project.storage.model;
 
+import by.it_academy.jd2.Mk_JD2_82_21.final_project.storage.api.enums.ELifeStyle;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -56,6 +58,14 @@ public class ActivityDiary {
 
     public void setCalories(double calories) {
         this.calories = calories;
+    }
+
+    public LocalDate getDateOfActivity() {
+        return dateOfActivity;
+    }
+
+    public void setDateOfActivity(LocalDate dateOfActivity) {
+        this.dateOfActivity = dateOfActivity;
     }
 
     public LocalDateTime getCreateDate() {

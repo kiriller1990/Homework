@@ -11,6 +11,6 @@ public interface IProductService {
     public void addProduct(Product product);
     public Product getProduct(long productId);
     public Page<Product> getProductList(Pageable pageable, String name);
-    void updateProduct(Product product, long id, LocalDateTime dt_update);
-    void deleteProduct(long id, LocalDateTime dt_update);
+    void updateProduct(Product product, long id);
+    void deleteProduct(long id);
 }

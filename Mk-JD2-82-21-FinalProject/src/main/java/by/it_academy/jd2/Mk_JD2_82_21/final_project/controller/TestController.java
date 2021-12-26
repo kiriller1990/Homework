@@ -37,4 +37,41 @@ public class TestController {
         }
         return names;
     }
+
+     /*    // Извлекая id продуктов и вес продуктов добавляем в блюдо список ингредиентов
+        List<Ingredient> ingredients = dishDTO.getIngredients();
+        List<Ingredient> ingredientInDishList = new ArrayList<>();
+        Ingredient ingredientInDish = new Ingredient();
+        for(Ingredient ingredient : ingredients) {
+                //получаем ID продукта которое передали
+            long idProductInDish = ingredient.getProduct().getId();
+
+                // По ID получаем продукт который будет в блюде
+            Product productInDish = productService.getProduct(idProductInDish);
+
+                //добавляем продукт в ингредиент блюда
+            ingredientInDish.setProduct(productInDish);
+
+                //получаем вес который передали
+            double weightProductInDish = ingredient.getWeight();
+
+                //добавляем вес в ингредиент болюда
+            ingredientInDish.setWeight(weightProductInDish);
+
+                //добавляем в список ингредиентов блюда
+            ingredientInDishList.add(ingredientInDish);
+        }*/
+
+     /*//Получили продукт по айди из ДТО
+            Product product = productService.getProduct(ingredient.getProduct().getId());
+                //добавляем продукт в ингредиент блюда
+            ingredientInDish.setProduct(product);
+                //получаем вес из дто
+            double weightProductInDish = ingredient.getWeight();
+                //добавляем вес в ингредиент болюда
+            ingredientInDish.setWeight(weightProductInDish);
+                //сохраняем онгредиент в БД
+            this.ingredientService.addIngredient(ingredientInDish);
+                //добавляем в список ингредиентов блюда
+            ingredientInDishList.add(ingredientInDish);*/
 }

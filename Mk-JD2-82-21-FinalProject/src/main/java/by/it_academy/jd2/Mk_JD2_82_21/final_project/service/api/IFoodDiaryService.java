@@ -10,11 +10,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface IFoodDiaryService {
-    public void addFoodDiary(FoodDiary foodDiary,long id_profile);
+    public FoodDiary addFoodDiary(FoodDiary foodDiary,long idProfile);
     public FoodDiaryDTO getFoodDiaryCard(long id_profile, long id_food);
     public Page<FoodDiary> getFoodDiaryList(Pageable pageable, long id_profile);
-    public void updateFoodDiary(FoodDiary foodDiary, LocalDateTime dt_update, long id_profile, long id_food);
-    public void deleteFoodDiary(long id);
-    public List<FoodDiary> getAllMealsInADay(long day, long id_profile);
+    public void updateFoodDiary(FoodDiary foodDiary, long idProfile, long idFood);
+    public void deleteFoodDiary( long idProfile, long idFood);
+    public List<FoodDiaryDTO> getAllMealsInADay(long day, long idProfile);
     public FoodDiaryDTO countingCaloriesReceived (FoodDiary foodDiary);
 }

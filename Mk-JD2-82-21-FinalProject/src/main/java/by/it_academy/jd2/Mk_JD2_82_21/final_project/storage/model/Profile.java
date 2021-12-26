@@ -29,10 +29,13 @@ public class Profile {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy")
     private LocalDate dateOfBirthday;
     @Column
+    @Enumerated(EnumType.STRING)
     private ESex sex;
     @Column
+    @Enumerated(EnumType.STRING)
     private ELifeStyle lifeStyle;
     @Column
+    @Enumerated(EnumType.STRING)
     private EGoals goal;
     @Column
     private LocalDateTime createDate;

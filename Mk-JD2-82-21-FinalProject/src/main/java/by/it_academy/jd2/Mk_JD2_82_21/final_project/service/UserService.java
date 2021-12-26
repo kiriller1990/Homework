@@ -44,21 +44,29 @@ public class UserService implements IUserService {
 
     @Override
     public User getUser(long userId) {
-        return userDAO.findById(userId).orElseThrow(()->
+        User user = userDAO.findById(userId).orElseThrow(()->
                 new IllegalArgumentException ("По данному ID пользователь не найден"));
+        User loginUser = userHolder.getUser();
+        if(user == loginUser || checkUtil.isAdminRoleCheck()) {
+            return user;
+        } else {
+            throw new IllegalArgumentException ("Вы можете просматривать только свои данные");
+        }
     }
 
     @Override
     public Page<User> getUserList(Pageable pageable) {
-        return userDAO.findAll(pageable);
+        if (checkUtil.isAdminRoleCheck()) {
+            return userDAO.findAll(pageable);
+        } else {
+            throw new IllegalArgumentException("Только администратор может просматривать список пользователей");
+        }
     }
 
     @Override
     public void updateUser(User user, long id) {
         User updateUser = getUser(id);
-        if (updateUser == null) {
-            throw new IllegalArgumentException("Пользователь с таким ID не найден");
-        } else if (updateUser==userHolder.getUser() || checkUtil.isAdminRoleCheck()) {
+        if (updateUser==userHolder.getUser() || checkUtil.isAdminRoleCheck()) {
             updateUser.setName(user.getName());
             updateUser.setLogin(user.getLogin());
             updateUser.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -71,6 +79,8 @@ public class UserService implements IUserService {
             updateUser.setCreateDate(userHolder.getUser().getCreateDate());
             updateUser.setUpdateDate(LocalDateTime.now());
             userDAO.save(updateUser);
+        } else {
+            throw new IllegalArgumentException("Только администратор может обновлять чужого пользователя");
         }
     }
 }

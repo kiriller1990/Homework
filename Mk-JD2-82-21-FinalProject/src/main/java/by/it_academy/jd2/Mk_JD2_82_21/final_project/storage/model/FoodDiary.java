@@ -15,6 +15,7 @@ public class FoodDiary {
     @OneToOne
     private Profile profile;
     @Column(name = "eating_time_type")
+    @Enumerated(EnumType.STRING)
     private EEatingTimeType eatingTimeType;
     @OneToOne
     private Product product;

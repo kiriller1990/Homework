@@ -19,7 +19,6 @@ public class FoodDiaryDTO {
     private double proteinsReceived;
     private double fatsReceived;
     private double carbohydratesReceived;
-    private LocalDate date;
     private LocalDateTime createDate;
     private LocalDateTime updateDate;
 
@@ -106,13 +105,6 @@ public class FoodDiaryDTO {
         this.carbohydratesReceived = carbohydratesReceived;
     }
 
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
 
     public LocalDateTime getCreateDate() {
         return createDate;
